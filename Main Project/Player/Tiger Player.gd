@@ -15,12 +15,12 @@ var initial_position
 var initial_location
 var final_position
 var final_location
-var goat_position
-var goat_location
+onready var goat_position = null
+onready var goat_location = null
 
 
 onready var goat_condition = false
-var goat_path
+onready var goat_path
 
 
 
@@ -30,6 +30,8 @@ func _ready():
 		if get_parent().get_parent().gameplay_position[i] == location:
 			initial_position = i
 	goat_path = null
+	goat_position = null
+	goat_location = null
 
 
 
@@ -95,7 +97,6 @@ func _on_TigerArea_input_event(viewport, event, shape_idx):
 			for i in get_parent().get_parent().allowed_moves[initial_position]:
 				if get_parent().get_parent().gameplay_position[i] == goat_location:
 					allowed = true
-			#print(allowed)
 			if get_parent().get_parent().item_in_zone[final_position][0] == null and allowed ==true:
 				if initial_location.x == goat_location.x:
 					
@@ -152,9 +153,18 @@ func _on_TigerArea_input_event(viewport, event, shape_idx):
 							movement()
 					
 					else:
-						pass
+						goat_position = null
+						goat_location = null
+						goat_condition = false
 					
+			elif allowed != true:
+				goat_position = null
+				goat_location = null
+				goat_condition = null
+				selected = false
+				get_parent().player1 = true
 			else:
+				
 				selected = false
 				get_parent().player1 = true
 		
@@ -166,6 +176,9 @@ func _on_TigerArea_input_event(viewport, event, shape_idx):
 					get_parent().get_parent().item_in_zone[initial_position][0] = null
 					initial_position = final_position
 					location = get_parent().get_parent().gameplay_position[final_position]
+					goat_position = null
+					goat_location = null
+					goat_condition = null
 					get_parent().player1 = false
 					emit_signal("tigerplayerturnfinished")
 			location = get_parent().get_parent().gameplay_position[initial_position]
@@ -184,11 +197,18 @@ func eat_goat_movement():
 	initial_position = final_position
 	location = get_parent().get_parent().gameplay_position[final_position]
 	get_parent().get_parent().item_in_zone[final_position][0] = "tiger"
+	goat_position = null
+	goat_location = null
+	goat_condition = false
 	get_parent().player1 = false
 	emit_signal("tigerplayerturnfinished")
 
 
 func movement():
+	print("Movement ma xiryo")
+	goat_position = null
+	goat_location = null
+	goat_condition = false
 	for i in get_parent().get_parent().allowed_moves[initial_position]:
 		if i == final_position:
 			get_parent().get_parent().item_in_zone[final_position][0] = "tiger"
@@ -196,6 +216,7 @@ func movement():
 			get_parent().get_parent().item_in_zone[initial_position][0] = null
 			initial_position = final_position
 			location = get_parent().get_parent().gameplay_position[final_position]
+			
 			get_parent().player1 = false
 			emit_signal("tigerplayerturnfinished")
 	location = get_parent().get_parent().gameplay_position[initial_position]
